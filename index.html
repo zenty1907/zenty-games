@@ -9,7 +9,7 @@
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#87a9bf;font-family:Arial,sans-serif;touch-action:none;color:white}
 canvas{display:block}
-#ui{position:fixed;inset:0;pointer-events:none;z-index:5}
+#ui{position:fixed;inset:0;pointer-events:none;z-index:50;isolation:isolate}
 .panel{background:rgba(10,17,25,.8);border:1px solid #ffffff28;border-radius:12px;padding:10px;backdrop-filter:blur(7px)}
 #brand{position:absolute;top:12px;left:12px;font-size:18px;font-weight:900;text-shadow:0 2px 6px #000}
 #stats{position:absolute;top:42px;left:12px;font-size:12px;line-height:1.7}
@@ -17,11 +17,11 @@ canvas{display:block}
 #mission strong{display:block;color:#ffe36e;font-size:14px;margin-bottom:5px}
 #message{position:absolute;top:24%;left:50%;transform:translateX(-50%);max-width:85vw;text-align:center;background:#07111ddd;padding:12px 18px;border-radius:12px;font-weight:bold;display:none}
 #minimap{position:absolute;right:12px;top:12px;width:110px;height:110px;border-radius:50%;border:2px solid #ffffff9c;background:#17251b}
-#controls{position:absolute;inset:0}
-#stick{position:absolute;left:22px;bottom:24px;width:138px;height:138px;border-radius:50%;background:#ffffff18;border:2px solid #ffffff60;pointer-events:auto;touch-action:none}
+#controls{position:absolute;inset:0;pointer-events:none}
+#stick{position:absolute;left:22px;bottom:24px;width:138px;height:138px;border-radius:50%;background:#ffffff28;border:2px solid #ffffff80;pointer-events:auto;touch-action:none;z-index:60}
 #nub{position:absolute;width:54px;height:54px;border-radius:50%;left:40px;top:40px;background:#e8f3ff9c;border:2px solid white}
 .actions{position:absolute;right:14px;bottom:22px;display:grid;grid-template-columns:repeat(2,66px);gap:9px;pointer-events:auto}
-.ctrl{height:58px;border-radius:15px;background:#132333d9;color:white;border:1px solid #ffffff70;font-weight:bold;font-size:12px;touch-action:none;user-select:none}
+.ctrl{height:58px;border-radius:15px;background:#132333f2;color:white;border:1px solid #ffffff90;font-weight:bold;font-size:12px;touch-action:none;user-select:none;-webkit-tap-highlight-color:transparent;pointer-events:auto;position:relative;z-index:60}
 .ctrl:active{background:#1f81a9}
 #lookhint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:10px;color:#fff9;text-shadow:0 2px 3px #000;white-space:nowrap}
 #start{position:fixed;inset:0;background:linear-gradient(#081421d9,#06101bf2);z-index:20;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center}
@@ -485,7 +485,7 @@ addEventListener('keyup',e=>{
  if(e.code==='ShiftLeft'||e.code==='ShiftRight')runHeld=false;
  if(e.code==='KeyN')nitroHeld=false;
 });
-$('play').addEventListener('click',()=>{
+$('play').addEventListener('pointerdown',e=>{e.preventDefault();if(gameStarted)return;
  $('start').style.display='none';
  gameStarted=true;
  say('ZENTY CITY','Hikâyen şimdi başlıyor!',3200);
