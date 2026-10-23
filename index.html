@@ -77,6 +77,7 @@ canvas{display:block}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script>
 (() => {
 'use strict';
@@ -162,6 +163,7 @@ const windowMats=[
  new THREE.MeshStandardMaterial({color:0xffdba0,emissive:0x4a3010,roughness:.45})
 ];
 const buildings=[];
+const buildingGroups=[];
 function makeBuilding(x,z,w,d,h,index){
  const g=group();
  g.position.set(x,0,z);
@@ -209,6 +211,7 @@ function makeBuilding(x,z,w,d,h,index){
   }
  }
  buildings.push({x,z,w,d,h});
+ buildingGroups.push({group:g,x,z,w,d,h,index});
  return g;
 }
 let bi=0;
@@ -222,6 +225,24 @@ for(let gx=-210;gx<=210;gx+=30){
  }
 }
 
+// Ücretsiz Kenney CC0 modelleri: bağlantı başarısız olursa prosedürel şehir aynen kalır.
+const ASSET_BASE='https://hidencod.github.io/tge-assets/';
+const assetLoader=new THREE.GLTFLoader();
+const buildingFiles=['packs/city-kit-commercial/building-a.glb','packs/city-kit-commercial/building-c.glb','packs/city-kit-suburban/building-type-b.glb','packs/city-kit-suburban/building-type-f.glb'];
+let loaded3DAssets=0;
+function fitModel(model,targetW,targetH,targetD,x,z){
+ model.updateMatrixWorld(true);
+ let bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3());
+ const scale=Math.min(targetW/Math.max(size.x,.01),targetH/Math.max(size.y,.01),targetD/Math.max(size.z,.01));
+ model.scale.setScalar(scale);model.updateMatrixWorld(true);
+ bounds.setFromObject(model);
+ model.position.x+=x-(bounds.min.x+bounds.max.x)/2;
+ model.position.z+=z-(bounds.min.z+bounds.max.z)/2;
+ model.position.y-=bounds.min.y;
+ return model;
+}
+function load3D(file,onLoad){assetLoader.load(ASSET_BASE+file,g=>{loaded3DAssets++;onLoad(g.scene)},undefined,()=>{});}
+buildingGroups.forEach((b,i)=>{if(i%3!==0)return;load3D(buildingFiles[i%buildingFiles.length],model=>{const fitted=fitModel(model,b.w,b.h+1,b.d,b.x,b.z);b.group.visible=false;scene.add(fitted);});});
 // Ağaçlar
 const trunkMat=mat(0x5b3d27),leafMats=[mat(0x315b38),mat(0x3f7042),mat(0x497947)];
 function makeTree(x,z){
@@ -336,6 +357,20 @@ for(let i=0;i<8;i++){
  traffic.push({obj:c,lane,speed:5+Math.random()*5});
 }
 
+// Haritada hareket eden trafiğe gerçek 3D araç modelleri ekle; mevcut araçlar yedek olarak kalır.
+load3D('packs/car-kit/hatchback-sports.glb',prototype=>{
+ const bounds=new THREE.Box3().setFromObject(prototype),size=bounds.getSize(new THREE.Vector3());
+ const scale=Math.min(3.2/Math.max(size.x,.01),1.65/Math.max(size.y,.01),4.1/Math.max(size.z,.01));
+ traffic.forEach((t,i)=>{if(i%2!==0)return;const model=prototype.clone(true);model.scale.setScalar(scale);model.position.set(0,0,0);t.obj.children.slice().forEach(child=>t.obj.remove(child));t.obj.add(model);});
+});
+// Yaya alanlarına farklı görünümlü 3D insan modelleri yerleştir.
+['packs/mini-characters/character-male-a.glb','packs/mini-characters/character-female-b.glb'].forEach((file,variant)=>load3D(file,prototype=>{
+ for(let i=0;i<8;i++){
+  const model=prototype.clone(true);const bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3());
+  model.scale.setScalar(1.8/Math.max(size.y,.01));model.position.set((i%4)*32-48,0,(variant?1:-1)*(45+Math.floor(i/4)*35));
+  model.rotation.y=(i%2?Math.PI:0);scene.add(model);
+ }
+}));
 // Görevler ve hikâye
 const missions=[
  {title:"1. YENİ BİR HAYAT",text:"Sarı işarete git ve Zenty ile konuş.",x:0,z:5,kind:"talk",reward:100,
