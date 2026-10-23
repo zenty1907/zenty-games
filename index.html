@@ -357,6 +357,21 @@ for(let i=0;i<8;i++){
  traffic.push({obj:c,lane,speed:5+Math.random()*5});
 }
 
+// Kenney CC0 yol parçaları: kavşaklar ve düz yol modülleri, mobil için gölge kapalı.
+function addRoadTile(proto,x,z,rotation=0){
+ const tile=proto.clone(true);tile.position.set(x,.025,z);tile.rotation.y=rotation;
+ tile.updateMatrixWorld(true);const bounds=new THREE.Box3().setFromObject(tile),size=bounds.getSize(new THREE.Vector3());
+ tile.scale.set(tile.scale.x*15/Math.max(size.x,.01),tile.scale.y*.22/Math.max(size.y,.01),tile.scale.z*15/Math.max(size.z,.01));
+ tile.traverse(o=>{if(o.isMesh){o.castShadow=false;o.receiveShadow=false;}});scene.add(tile);
+}
+load3D('packs/city-kit-roads/road-intersection.glb',prototype=>{
+ for(let x=-180;x<=180;x+=60)for(let z=-180;z<=180;z+=60)addRoadTile(prototype,x,z,0);
+});
+load3D('packs/city-kit-roads/road-straight.glb',prototype=>{
+ for(let road=-180;road<=180;road+=60){
+  for(let p=-165;p<=165;p+=15){if(Math.abs(p%60)<1)continue;addRoadTile(prototype,road,p,0);addRoadTile(prototype,p,road,Math.PI/2);}
+ }
+});
 // Haritada hareket eden trafiğe gerçek 3D araç modelleri ekle; mevcut araçlar yedek olarak kalır.
 load3D('packs/car-kit/hatchback-sports.glb',prototype=>{
  const bounds=new THREE.Box3().setFromObject(prototype),size=bounds.getSize(new THREE.Vector3());
