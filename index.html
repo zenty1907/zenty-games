@@ -297,17 +297,31 @@ function hubLanguage(){const names=['Türkçe','English','Deutsch','Español','F
 window.zentyHubOpen=()=>hubOpen('overview');window.zentyHubClose=hubClose;window.zentyHubRender=tab=>{hubState.tab=tab;hubRender()};window.zentyHubMission=hubMission;window.zentyHubSocial=hubSocial;window.zentyHubVehicle=hubVehicle;window.zentyHubHome=hubHome;window.zentyHubUpgrade=hubUpgrade;window.zentyHubBusiness=hubBusiness;window.zentyHubIncome=hubIncome;window.zentyHubActivity=hubActivity;window.zentyHubCraft=hubCraft;window.zentyHubBuild=hubBuild;window.zentyHubSave=hubSave;window.zentyHubSlot=hubSlot;window.zentyHubExport=hubExport;window.zentyHubImport=hubImport;window.zentyHubLanguage=hubLanguage;
 hubLoad();
 
-/* Reliable touch/click activation on mobile browsers */
-document.addEventListener('pointerup',function(e){
- const b=e.target.closest&&e.target.closest('#start,#continue,#pause,#lifehub');
- if(!b)return;
- window.__zentyHandledAt=Date.now();
- if(b.dataset.touchHandled==='1')return;
- if(b.id==='lifehub'){e.preventDefault();window.zentyHubOpen();return}
- if(b.id==='start'){e.preventDefault();if(started&&paused){pauseGame()}else{startGame(false)}}
- if(b.id==='continue'){e.preventDefault();startGame(true)}
- if(b.id==='pause'){e.preventDefault();pauseGame()}
-},{capture:true});
+/* Mobile input recovery: handle taps early and avoid duplicate synthetic clicks */
+(function(){
+ const lastAction={};
+ function activate(e){
+  const b=e.target&&e.target.closest&&e.target.closest('#start,#continue,#pause,#lifehub');
+  if(!b)return;
+  const now=Date.now();
+  if(lastAction[b.id]&&now-lastAction[b.id]<650){e.preventDefault();return}
+  lastAction[b.id]=now;
+  window.__zentyHandledAt=now;
+  e.preventDefault();
+  try{
+   if(b.id==='lifehub'){if(window.zentyHubOpen)window.zentyHubOpen();return}
+   if(b.id==='start'){if(started&&paused)pauseGame();else startGame(false);return}
+   if(b.id==='continue'){startGame(true);return}
+   if(b.id==='pause'){pauseGame();return}
+  }catch(err){
+   console.error('Zenty button error:',err);
+   const msg=$('menutext');if(msg)msg.textContent='Başlatma hatası: '+(err&&err.message?err.message:'oyun başlatılamadı')+'. Sayfayı yenileyip tekrar dene.';
+   const overlay=$('overlay');if(overlay)overlay.style.display='flex';
+  }
+ }
+ document.addEventListener('pointerdown',activate,{capture:true,passive:false});
+ document.addEventListener('touchstart',activate,{capture:true,passive:false});
+})();
 
 try{init();let hasSave=false;try{hasSave=!!localStorage.getItem('zentyLifeSave')}catch(e){}$('continue').style.display=hasSave?'block':'none';updateHud();updateQuest()}catch(err){console.error(err);$('menutext').textContent='3D motor başlatılamadı. İnternet bağlantını kontrol et ve sayfayı yenile.';$('start').textContent='YENİDEN DENE'}
 })();
