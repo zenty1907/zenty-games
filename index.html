@@ -13,6 +13,13 @@
 .hubbar{height:6px;background:#334338;border-radius:9px;overflow:hidden;margin-top:8px}.hubbar i{display:block;height:100%;background:#b7f36b}
 .hubfield{width:100%;background:#0a130e;color:white;border:1px solid #ffffff30;border-radius:9px;padding:10px;margin:5px 0}
 @media(max-width:560px){#lifehub{top:auto;right:12px;bottom:150px;font-size:12px;padding:9px}.hubbox{margin:5px auto;padding:11px}.hubcard{padding:9px}}
+</style><style>
+/* Touch reliability patch */
+#overlay{pointer-events:auto!important;z-index:100!important}
+#overlay .card,#overlay button{position:relative;pointer-events:auto!important;touch-action:manipulation}
+#start,#continue,#pause,#lifehub,.hubbtn,.hubclose{pointer-events:auto!important;touch-action:manipulation;position:relative;z-index:101}
+#hubmodal{z-index:200}
+#hubmodal[style*="display: block"]{pointer-events:auto}
 </style></head><body>
 <canvas id="world" aria-label="Zenty Life 3D oyun dünyası"></canvas><button id="lifehub" onclick="window.zentyHubOpen()">📱 YAŞAM MENÜSÜ</button><div id="hubmodal"><div class="hubbox"><div class="hubhead"><h2>🌿 ZENTY LIFE · YAŞAM</h2><button class="hubclose" onclick="window.zentyHubClose()">✕</button></div><div class="hubtabs" id="hubtabs"></div><div id="hubcontent"></div></div></div><div id="hud"><div class="top"><div class="brand">ZENTY <em>LIFE</em><div style="font-size:9px;color:#d4e1d5;letter-spacing:2px">OPEN WORLD</div></div><div id="stats"><div class="stat panel"><small>SAAT</small><b id="gameclock">08:00</b></div><div class="stat panel"><small>MEVSİM</small><b id="season">🌱 İlkbahar</b></div><div class="stat panel"><small>HAVA</small><b id="weather">☀️ Açık</b></div><div class="stat panel"><small>PARA</small><b id="money">₺0</b></div><div class="stat panel"><small>SAĞLIK</small><b id="health">100</b></div><div class="stat panel"><small>AÇLIK</small><b id="hunger">100</b></div><div class="stat panel"><small>SUSUZLUK</small><b id="thirst">100</b></div><div class="stat panel"><small>YAKIT</small><b id="fuel">100%</b></div><button id="pause" aria-label="Menü">Ⅱ</button></div></div>
 <div id="quest" class="panel"><div class="eyebrow">ANA GÖREV · 01</div><div class="questtitle" id="qtitle">Ormanda uyan</div><div class="questdesc" id="qdesc">Çevreyi keşfet ve terk edilmiş pikabı bul.</div></div><div id="hint" class="panel">Kamerayı çevirmek için ekranın boş alanını sürükle.</div>
@@ -289,6 +296,17 @@ function hubImport(){try{const d=JSON.parse(decodeURIComponent(escape(atob($('hu
 function hubLanguage(){const names=['Türkçe','English','Deutsch','Español','Français','العربية','Русский'];hubState.language=names[(names.indexOf(hubState.language)+1)%names.length];$('hubmessage').textContent='Seçilen dil: '+hubState.language+'. Menü etiketleri için temel dil seçildi; tam oyun çevirisi henüz tamamlanmadı.';hubPersist()}
 window.zentyHubOpen=()=>hubOpen('overview');window.zentyHubClose=hubClose;window.zentyHubRender=tab=>{hubState.tab=tab;hubRender()};window.zentyHubMission=hubMission;window.zentyHubSocial=hubSocial;window.zentyHubVehicle=hubVehicle;window.zentyHubHome=hubHome;window.zentyHubUpgrade=hubUpgrade;window.zentyHubBusiness=hubBusiness;window.zentyHubIncome=hubIncome;window.zentyHubActivity=hubActivity;window.zentyHubCraft=hubCraft;window.zentyHubBuild=hubBuild;window.zentyHubSave=hubSave;window.zentyHubSlot=hubSlot;window.zentyHubExport=hubExport;window.zentyHubImport=hubImport;window.zentyHubLanguage=hubLanguage;
 hubLoad();
+
+/* Reliable touch/click activation on mobile browsers */
+document.addEventListener('pointerup',function(e){
+ const b=e.target.closest&&e.target.closest('#start,#continue,#pause,#lifehub');
+ if(!b)return;
+ if(b.dataset.touchHandled==='1')return;
+ if(b.id==='lifehub'){e.preventDefault();window.zentyHubOpen();return}
+ if(b.id==='start'){e.preventDefault();if(started&&paused){pauseGame()}else{startGame(false)}}
+ if(b.id==='continue'){e.preventDefault();startGame(true)}
+ if(b.id==='pause'){e.preventDefault();pauseGame()}
+},{capture:true});
 
 try{init();let hasSave=false;try{hasSave=!!localStorage.getItem('zentyLifeSave')}catch(e){}$('continue').style.display=hasSave?'block':'none';updateHud();updateQuest()}catch(err){console.error(err);$('menutext').textContent='3D motor başlatılamadı. İnternet bağlantını kontrol et ve sayfayı yenile.';$('start').textContent='YENİDEN DENE'}
 })();
