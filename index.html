@@ -13,39 +13,11 @@
 .hubbar{height:6px;background:#334338;border-radius:9px;overflow:hidden;margin-top:8px}.hubbar i{display:block;height:100%;background:#b7f36b}
 .hubfield{width:100%;background:#0a130e;color:white;border:1px solid #ffffff30;border-radius:9px;padding:10px;margin:5px 0}
 @media(max-width:560px){#lifehub{top:auto;right:12px;bottom:150px;font-size:12px;padding:9px}.hubbox{margin:5px auto;padding:11px}.hubcard{padding:9px}}
-</style><style>
-/* Touch reliability patch */
-#overlay{pointer-events:auto!important;z-index:100!important}
-#overlay .card,#overlay button{position:relative;pointer-events:auto!important;touch-action:manipulation}
-#start,#continue,#pause,#lifehub,.hubbtn,.hubclose{pointer-events:auto!important;touch-action:manipulation;position:relative;z-index:101}
-#hubmodal{z-index:200}
-#hubmodal[style*="display: block"]{pointer-events:auto}
 </style></head><body>
 <canvas id="world" aria-label="Zenty Life 3D oyun dünyası"></canvas><button id="lifehub" onclick="window.zentyHubOpen()">📱 YAŞAM MENÜSÜ</button><div id="hubmodal"><div class="hubbox"><div class="hubhead"><h2>🌿 ZENTY LIFE · YAŞAM</h2><button class="hubclose" onclick="window.zentyHubClose()">✕</button></div><div class="hubtabs" id="hubtabs"></div><div id="hubcontent"></div></div></div><div id="hud"><div class="top"><div class="brand">ZENTY <em>LIFE</em><div style="font-size:9px;color:#d4e1d5;letter-spacing:2px">OPEN WORLD</div></div><div id="stats"><div class="stat panel"><small>SAAT</small><b id="gameclock">08:00</b></div><div class="stat panel"><small>MEVSİM</small><b id="season">🌱 İlkbahar</b></div><div class="stat panel"><small>HAVA</small><b id="weather">☀️ Açık</b></div><div class="stat panel"><small>PARA</small><b id="money">₺0</b></div><div class="stat panel"><small>SAĞLIK</small><b id="health">100</b></div><div class="stat panel"><small>AÇLIK</small><b id="hunger">100</b></div><div class="stat panel"><small>SUSUZLUK</small><b id="thirst">100</b></div><div class="stat panel"><small>YAKIT</small><b id="fuel">100%</b></div><button id="pause" aria-label="Menü">Ⅱ</button></div></div>
 <div id="quest" class="panel"><div class="eyebrow">ANA GÖREV · 01</div><div class="questtitle" id="qtitle">Ormanda uyan</div><div class="questdesc" id="qdesc">Çevreyi keşfet ve terk edilmiş pikabı bul.</div></div><div id="hint" class="panel">Kamerayı çevirmek için ekranın boş alanını sürükle.</div>
 <div id="wanted" class="panel">🚨 ARANIYOR: <span id="stars">★☆☆☆☆</span></div><div id="inventory" class="panel"><div class="invtitle">🎒 ÇANTA</div><div id="invrows"></div></div><div id="bottom"><div id="stick" aria-label="Hareket joystick'i"><div id="nub"></div></div><div class="actions"><button class="action" id="bag">🎒 ÇANTA</button><button class="action" id="jump">↟ ZIPLA</button><button class="action primary" id="interact">ETKİLEŞİM</button></div></div></div><div id="toast"></div><div id="shopmodal" class="shopmodal"><div class="shopcard"><h2>🛒 ZENTY MARKET</h2><p>Ne almak istiyorsun?</p><button class="shopchoice" data-buy="Su">💧 Su — ₺20</button><button class="shopchoice" data-buy="Yiyecek">🍎 Yiyecek — ₺30</button><button id="shopcancel" class="shopcancel">İPTAL</button></div></div>
 <div id="homemodal" class="shopmodal"><div class="shopcard"><h2 id="hometitle">🏠 EV</h2><p id="homedesc">Evin</p><button id="homebuy" class="homechoice">Evi satın al</button><button id="homerest" class="homechoice" style="display:none">🛏️ DİNLEN VE İYİLEŞ</button><button id="homeupgrade" class="homechoice" style="display:none">🛠️ EVİ GELİŞTİR — ₺300</button><button id="homeclose" class="homecancel">KAPAT</button></div></div><div id="overlay"><div class="card"><div class="eyebrow">TEK OYUNCULU AÇIK DÜNYA</div><div class="logo">ZENTY <span>LIFE</span></div><p id="menutext">Ormanın kıyısında uyandın. Paran, evin ve araban yok. Çevreyi keşfet; ormanın içindeki eski pikap yeni hayatının başlangıcı olabilir.</p><div class="chips"><span class="chip">🌲 3D Orman</span><span class="chip">🚙 Terk edilmiş pikap</span><span class="chip">🎮 Mobil + PC</span></div><button class="mainbtn" id="start">YENİ HAYATA BAŞLA　➜</button><button class="subbtn" id="continue" style="display:none">KAYITLI OYUNA DEVAM ET</button><div id="smallprint">Ücretsiz prototip · İlerleme bu tarayıcıya kaydedilir</div></div></div>
-<script>
-/* Independent mobile menu fallback; reports if the game engine failed before startup. */
-(function(){
- function tap(e){
-  var b=e.target&&e.target.closest&&e.target.closest('#start,#continue');
-  if(!b)return;
-  e.preventDefault();e.stopImmediatePropagation();
-  if(window.zentyStartGame){
-   try{window.zentyStartGame(b.id==='continue')}catch(err){
-    var m=document.getElementById('menutext');if(m)m.textContent='Başlatma hatası: '+(err.message||err);
-    var o=document.getElementById('overlay');if(o)o.style.display='flex';
-   }
-  }else{
-   var m=document.getElementById('menutext');
-   if(m)m.textContent='Oyun motoru yüklenemedi. İnternet bağlantını kontrol et; sonra sayfayı yenile.';
-  }
- }
- document.addEventListener('click',tap,true);
- document.addEventListener('touchend',tap,{capture:true,passive:false});
-})();
-</script>
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 (()=>{
@@ -259,9 +231,8 @@ if(forage&&fd<7){toast(forage.name+' yakında. Biraz daha yaklaş.');return}
 let nearHome=null,hd=999;for(const h of homes){const d=Math.hypot(player.position.x-h.doorX,player.position.z-h.doorZ);if(d<hd){hd=d;nearHome=h}}if(nearHome&&hd<4.8){openHome(nearHome);return}toast('Etkileşim kurulacak bir şey yakında değil.')}
 function jump(){if(onGround&&started&&!paused){velocityY=6.5;onGround=false}}
 function startGame(cont){closeMarket();closeHome();$('overlay').style.display='none';started=true;paused=false;if(cont){if(!load())toast('Kayıt bulunamadı; yeni oyun başladı.')}else{try{localStorage.removeItem('zentyLifeSave')}catch(e){}player.position.set(16,0,-17);player.visible=true;inVehicle=false;truck.position.set(20,0,-17);inventory={Su:1,Yiyecek:0,'Yabani yemiş':0,'Yabani mantar':0,Odun:0,'Tamir parçası':0,Batarya:0,'Yedek lastik':0};for(const f of forageNodes){f.collected=false;f.group.visible=true}money=0;health=100;hunger=100;thirst=100;fuel=100;seasonTime=0;seasonIndex=0;survivalSeconds=0;achievements=[];gameDay=1;jobsDone=[];activeJob=null;weatherIndex=0;weatherTimer=0;gameMinutes=480;applySeason();applyDayNight();applyWeather();wantedLevel=0;updateWanted();quest=0;truckFound=false;partCollected=0;activeJob=null;jobsDone=[];for(const p of parts){p.collected=false;p.group.visible=true}updateHud();updateQuest()}clock.getDelta();toast('Hayatta kalma yolculuğun başladı.')}
-window.zentyStartGame=startGame;
 function pauseGame(){if(!started)return;paused=!paused;$('overlay').style.display=paused?'flex':'none';if(paused){save();$('menutext').textContent='Oyun duraklatıldı. İlerlemen otomatik kaydedildi.';$('start').textContent='OYUNA DEVAM ET';$('continue').style.display='block'}else{$('menutext').textContent='';$('start').textContent='YENİ HAYATA BAŞLA　➜';$('continue').style.display='none';clock.getDelta()}}
-document.querySelectorAll('[data-buy]').forEach(b=>b.addEventListener('click',()=>buyMarketItem(b.dataset.buy)));$('shopcancel').addEventListener('click',closeMarket);$('homebuy').addEventListener('click',buyHome);$('homerest').addEventListener('click',restAtHome);$('homeupgrade').addEventListener('click',buyHomeUpgrade);$('homeclose').addEventListener('click',closeHome);$('homemodal').addEventListener('pointerdown',e=>{if(e.target===$('homemodal'))closeHome()});$('shopmodal').addEventListener('pointerdown',e=>{if(e.target===$('shopmodal'))closeMarket()});$('start').addEventListener('click',()=>{if(Date.now()-(window.__zentyHandledAt||0)<700)return;if(started&&paused){pauseGame();return}startGame(false)});$('continue').addEventListener('click',()=>{if(Date.now()-(window.__zentyHandledAt||0)<700)return;startGame(true)});$('pause').addEventListener('click',()=>{if(Date.now()-(window.__zentyHandledAt||0)<700)return;pauseGame()});$('interact').addEventListener('pointerdown',e=>{e.preventDefault();interact()});$('jump').addEventListener('pointerdown',e=>{e.preventDefault();jump()});const crimeBtn=document.createElement('button');crimeBtn.className='action';crimeBtn.id='crime';crimeBtn.textContent='👊 VUR';$('bottom').querySelector('.actions').insertBefore(crimeBtn,$('interact'));crimeBtn.addEventListener('pointerdown',e=>{e.preventDefault();commitCrime()});$('bag').addEventListener('pointerdown',e=>{e.preventDefault();const el=$('inventory');el.style.display=el.style.display==='block'?'none':'block';updateHud()});
+document.querySelectorAll('[data-buy]').forEach(b=>b.addEventListener('click',()=>buyMarketItem(b.dataset.buy)));$('shopcancel').addEventListener('click',closeMarket);$('homebuy').addEventListener('click',buyHome);$('homerest').addEventListener('click',restAtHome);$('homeupgrade').addEventListener('click',buyHomeUpgrade);$('homeclose').addEventListener('click',closeHome);$('homemodal').addEventListener('pointerdown',e=>{if(e.target===$('homemodal'))closeHome()});$('shopmodal').addEventListener('pointerdown',e=>{if(e.target===$('shopmodal'))closeMarket()});$('start').addEventListener('click',()=>{if(started&&paused){pauseGame();return}startGame(false)});$('continue').addEventListener('click',()=>startGame(true));$('pause').addEventListener('click',pauseGame);$('interact').addEventListener('pointerdown',e=>{e.preventDefault();interact()});$('jump').addEventListener('pointerdown',e=>{e.preventDefault();jump()});const crimeBtn=document.createElement('button');crimeBtn.className='action';crimeBtn.id='crime';crimeBtn.textContent='👊 VUR';$('bottom').querySelector('.actions').insertBefore(crimeBtn,$('interact'));crimeBtn.addEventListener('pointerdown',e=>{e.preventDefault();commitCrime()});$('bag').addEventListener('pointerdown',e=>{e.preventDefault();const el=$('inventory');el.style.display=el.style.display==='block'?'none':'block';updateHud()});
 let sp=null,sr=null;$('stick').addEventListener('pointerdown',e=>{e.preventDefault();sp=e.pointerId;sr=$('stick').getBoundingClientRect();$('stick').setPointerCapture(e.pointerId);stickMove(e)});$('stick').addEventListener('pointermove',e=>{if(sp===e.pointerId)stickMove(e)});function stickMove(e){const r=sr||$('stick').getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2),max=r.width*.31,len=Math.hypot(dx,dy)||1;moveX=dx/Math.max(max,len);moveY=dy/Math.max(max,len);$('nub').style.transform='translate('+moveX*max+'px,'+moveY*max+'px)'}function stickEnd(e){if(sp!==e.pointerId)return;sp=null;moveX=moveY=0;$('nub').style.transform='translate(0,0)'}$('stick').addEventListener('pointerup',stickEnd);$('stick').addEventListener('pointercancel',stickEnd);
 canvas.addEventListener('pointerdown',e=>{if(e.clientX<innerWidth*.32&&e.clientY>innerHeight*.55)return;camPointer=e.pointerId;lastPX=e.clientX;lastPY=e.clientY;try{canvas.setPointerCapture(e.pointerId)}catch(_){}});canvas.addEventListener('pointermove',e=>{if(camPointer!==e.pointerId||paused)return;const dx=e.clientX-lastPX,dy=e.clientY-lastPY;lastPX=e.clientX;lastPY=e.clientY;yaw-=dx*.006;pitch=Math.max(-.05,Math.min(.65,pitch+dy*.0035))});function camEnd(e){if(camPointer===e.pointerId)camPointer=null}canvas.addEventListener('pointerup',camEnd);canvas.addEventListener('pointercancel',camEnd);
 const keys={};addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(e.key.toLowerCase()))e.preventDefault();if(e.key.toLowerCase()==='e')interact();if(e.key===' ')jump();if(e.key==='Escape')pauseGame()});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);document.addEventListener('visibilitychange',()=>{if(document.hidden&&started&&!paused)pauseGame()});
@@ -319,32 +290,6 @@ function hubLanguage(){const names=['Türkçe','English','Deutsch','Español','F
 window.zentyHubOpen=()=>hubOpen('overview');window.zentyHubClose=hubClose;window.zentyHubRender=tab=>{hubState.tab=tab;hubRender()};window.zentyHubMission=hubMission;window.zentyHubSocial=hubSocial;window.zentyHubVehicle=hubVehicle;window.zentyHubHome=hubHome;window.zentyHubUpgrade=hubUpgrade;window.zentyHubBusiness=hubBusiness;window.zentyHubIncome=hubIncome;window.zentyHubActivity=hubActivity;window.zentyHubCraft=hubCraft;window.zentyHubBuild=hubBuild;window.zentyHubSave=hubSave;window.zentyHubSlot=hubSlot;window.zentyHubExport=hubExport;window.zentyHubImport=hubImport;window.zentyHubLanguage=hubLanguage;
 hubLoad();
 
-/* Mobile input recovery: handle taps early and avoid duplicate synthetic clicks */
-(function(){
- const lastAction={};
- function activate(e){
-  const b=e.target&&e.target.closest&&e.target.closest('#start,#continue,#pause,#lifehub');
-  if(!b)return;
-  const now=Date.now();
-  if(lastAction[b.id]&&now-lastAction[b.id]<650){e.preventDefault();return}
-  lastAction[b.id]=now;
-  window.__zentyHandledAt=now;
-  e.preventDefault();
-  try{
-   if(b.id==='lifehub'){if(window.zentyHubOpen)window.zentyHubOpen();return}
-   if(b.id==='start'){if(started&&paused)pauseGame();else startGame(false);return}
-   if(b.id==='continue'){startGame(true);return}
-   if(b.id==='pause'){pauseGame();return}
-  }catch(err){
-   console.error('Zenty button error:',err);
-   const msg=$('menutext');if(msg)msg.textContent='Başlatma hatası: '+(err&&err.message?err.message:'oyun başlatılamadı')+'. Sayfayı yenileyip tekrar dene.';
-   const overlay=$('overlay');if(overlay)overlay.style.display='flex';
-  }
- }
- document.addEventListener('pointerdown',activate,{capture:true,passive:false});
- document.addEventListener('touchstart',activate,{capture:true,passive:false});
-})();
-
-try{init();let hasSave=false;try{hasSave=!!localStorage.getItem('zentyLifeSave')}catch(e){}$('continue').style.display=hasSave?'block':'none';updateHud();updateQuest()}catch(err){console.error('Zenty init error:',err);$('menutext').textContent='HATA: '+(err&&err.message?err.message:String(err))+' — ekran görüntüsü gönder.';$('start').textContent='TEKRAR DENE'}
+try{init();let hasSave=false;try{hasSave=!!localStorage.getItem('zentyLifeSave')}catch(e){}$('continue').style.display=hasSave?'block':'none';updateHud();updateQuest()}catch(err){console.error(err);$('menutext').textContent='3D motor başlatılamadı. İnternet bağlantını kontrol et ve sayfayı yenile.';$('start').textContent='YENİDEN DENE'}
 })();
 </script></body></html>
