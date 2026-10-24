@@ -372,7 +372,7 @@ hubLoad();
  document.addEventListener('touchstart',activate,{capture:true,passive:false});
 })();
 
-try{init();let hasSave=false;try{hasSave=!!localStorage.getItem('zentyLifeSave')}catch(e){}$('continue').style.display=hasSave?'block':'none';updateHud();updateQuest()}catch(err){console.error(err);$('menutext').textContent='3D motor başlatılamadı. İnternet bağlantını kontrol et ve sayfayı yenile.';$('start').textContent='YENİDEN DENE'}
+try{init();let hasSave=false;try{hasSave=!!localStorage.getItem('zentyLifeSave')}catch(e){}$('continue').style.display=hasSave?'block':'none';updateHud();updateQuest()}catch(err){console.error('Zenty init error:',err);$('menutext').textContent='HATA: '+(err&&err.message?err.message:String(err))+' — ekran görüntüsü gönder.';$('start').textContent='TEKRAR DENE'}
 })();
 })().catch(err=>{console.error('Zenty boot error',err);const m=document.getElementById('menutext');if(m)m.textContent='Başlatma hatası: '+(err&&err.message?err.message:String(err));});
 </script></body></html>
