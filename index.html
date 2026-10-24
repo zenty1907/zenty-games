@@ -290,6 +290,6 @@ function hubLanguage(){const names=['Türkçe','English','Deutsch','Español','F
 window.zentyHubOpen=()=>hubOpen('overview');window.zentyHubClose=hubClose;window.zentyHubRender=tab=>{hubState.tab=tab;hubRender()};window.zentyHubMission=hubMission;window.zentyHubSocial=hubSocial;window.zentyHubVehicle=hubVehicle;window.zentyHubHome=hubHome;window.zentyHubUpgrade=hubUpgrade;window.zentyHubBusiness=hubBusiness;window.zentyHubIncome=hubIncome;window.zentyHubActivity=hubActivity;window.zentyHubCraft=hubCraft;window.zentyHubBuild=hubBuild;window.zentyHubSave=hubSave;window.zentyHubSlot=hubSlot;window.zentyHubExport=hubExport;window.zentyHubImport=hubImport;window.zentyHubLanguage=hubLanguage;
 hubLoad();
 
-try{init();let hasSave=false;try{hasSave=!!localStorage.getItem('zentyLifeSave')}catch(e){}$('continue').style.display=hasSave?'block':'none';updateHud();updateQuest()}catch(err){console.error(err);$('menutext').textContent='3D motor başlatılamadı. İnternet bağlantını kontrol et ve sayfayı yenile.';$('start').textContent='YENİDEN DENE'}
+try{init();let hasSave=false;try{hasSave=!!localStorage.getItem('zentyLifeSave')}catch(e){}$('continue').style.display=hasSave?'block':'none';updateHud();updateQuest()}catch(err){console.error('Zenty init error:',err);$('menutext').textContent='HATA: '+(err&&err.message?err.message:String(err));$('start').textContent='YENİDEN DENE'}
 })();
 </script></body></html>
