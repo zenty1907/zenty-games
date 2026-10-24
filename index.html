@@ -46,36 +46,9 @@
  document.addEventListener('touchend',tap,{capture:true,passive:false});
 })();
 </script>
-<script>
-/* Load the 3D engine before executing any game code; try multiple CDNs. */
-(async function loadThreeThenStart(){
- if(!window.THREE){
-  const sources=[
-   'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.149.0/three.min.js',
-   'https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js',
-   'https://unpkg.com/three@0.149.0/build/three.min.js'
-  ];
-  let lastError=null;
-  for(const src of sources){
-   try{
-    await new Promise((resolve,reject)=>{
-     const s=document.createElement('script');s.src=src;s.async=true;
-     s.onload=()=>window.THREE?resolve():reject(new Error('THREE global missing'));
-     s.onerror=()=>reject(new Error('CDN unavailable: '+src));
-     document.head.appendChild(s);
-    });
-    if(window.THREE)break;
-   }catch(e){lastError=e;console.warn(e.message)}
-  }
-  if(!window.THREE){
-   const m=document.getElementById('menutext');
-   if(m)m.textContent='3D motor indirilemedi. Üç kaynak da açılamadı. İnternet/CDN erişimi engelleniyor olabilir.';
-   const b=document.getElementById('start');if(b)b.textContent='3D MOTOR YÜKLENEMEDİ';
-   window.zentyEngineLoadError=String(lastError||'THREE.js unavailable');
-   return;
-  }
- }
- (()=>{
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+(()=>{
 'use strict';
 const $=id=>document.getElementById(id),canvas=$('world');let renderer,scene,camera,clock,player,truck,fuelStation=null,market=null,homes=[],parts=[],npcs=[],animals=[],forageNodes=[],police=[],colliders=[],achievements=[],started=false,paused=true,repaired=false,inVehicle=false,inventory={Su:1,Yiyecek:0,'Tamir parçası':0,Batarya:0,'Yedek lastik':0},money=0,health=100,hunger=100,thirst=100,fuel=100,quest=0,yaw=0,pitch=.22,moveX=0,moveY=0,velocityY=0,onGround=true,camPointer=null,lastPX=0,lastPY=0,truckFound=false,partCollected=0,activeJob=null,jobsDone=[],waypoint=null,waypointRing=null,waypointBeam=null,wantedLevel=0,crimeCooldown=0,arrestCooldown=0,seasonTime=0,seasonIndex=0,sunLight=null,hemiLight=null,gameMinutes=480,gameDay=1,weatherIndex=0,weatherTimer=0,rainPoints=null,rainVelocities=[];
 const mat=(c,r=.9,m=0)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m}),M={grass:mat(0x536f42),trunk:mat(0x58402b),leaves:mat(0x315b37),leaves2:mat(0x426c3d),rock:mat(0x777d70),path:mat(0x9b8c69),wood:mat(0x70543a),roof:mat(0x39443d),metal:mat(0x59615d,.45,.55),rust:mat(0x855238,.65,.2),glass:mat(0x344d4b,.25,.1),tire:mat(0x171a19),shirt:mat(0x526b45),pants:mat(0x303b35),skin:mat(0xc9946e),hair:mat(0x30271e),water:mat(0x477c86,.3,.15)};
@@ -374,5 +347,4 @@ hubLoad();
 
 try{init();let hasSave=false;try{hasSave=!!localStorage.getItem('zentyLifeSave')}catch(e){}$('continue').style.display=hasSave?'block':'none';updateHud();updateQuest()}catch(err){console.error('Zenty init error:',err);$('menutext').textContent='HATA: '+(err&&err.message?err.message:String(err))+' — ekran görüntüsü gönder.';$('start').textContent='TEKRAR DENE'}
 })();
-})().catch(err=>{console.error('Zenty boot error',err);const m=document.getElementById('menutext');if(m)m.textContent='Başlatma hatası: '+(err&&err.message?err.message:String(err));});
 </script></body></html>
