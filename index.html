@@ -21,7 +21,52 @@ const points=[new THREE.Vector3(-9,.025,30),new THREE.Vector3(-6,.025,18),new TH
 const creek=mesh(new THREE.PlaneGeometry(9,80),M.water);creek.rotation.x=-Math.PI/2;creek.rotation.z=-.16;creek.position.set(-31,.01,-12);creek.material.transparent=true;creek.material.opacity=.88;
 for(let i=0;i<260;i++){const a=Math.random()*Math.PI*2,r=17+Math.random()*82,x=Math.cos(a)*r,z=Math.sin(a)*r;if((Math.abs(x)<13&&z>-22&&z<20)||(Math.abs(x-16)<9&&Math.abs(z+17)<10)||(Math.abs(x+31)<7&&z>-35&&z<12)||(Math.abs(x-25)<19&&Math.abs(z+17)<13)||(Math.abs(x-48)<12&&Math.abs(z+36)<11)||(Math.abs(x-48)<12&&Math.abs(z+17)<10))continue;tree(x,z,.75+Math.random()*.8)}
 for(let i=0;i<48;i++){const x=(Math.random()-.5)*150,z=(Math.random()-.5)*150;if(Math.hypot(x,z)<15)continue;const radius=.5+Math.random()*1.2;const o=mesh(new THREE.DodecahedronGeometry(radius,0),M.rock);o.position.set(x,.15,z);o.scale.y=.55;colliders.push({x,z,r:radius+.35})}
-cabin(-16,-21);cabin(48,-42);shed(55,-34);addParkingLot();addFuelStation();addMarket();addTruck(20,-17);addParts();addPlayer();addNPCs();addPolice();addWaypoint();const sunBall=mesh(new THREE.SphereGeometry(4,12,8),new THREE.MeshBasicMaterial({color:0xffe9b1}));sunBall.position.set(-65,52,-85);sunBall.castShadow=false;initWeather();clock=new THREE.Clock();addEventListener('resize',resize);animate()}
+cabin(-16,-21);cabin(48,-42);shed(55,-34);addWorldRegions();addParkingLot();addFuelStation();addMarket();addTruck(20,-17);addParts();addPlayer();addNPCs();addPolice();addWaypoint();const sunBall=mesh(new THREE.SphereGeometry(4,12,8),new THREE.MeshBasicMaterial({color:0xffe9b1}));sunBall.position.set(-65,52,-85);sunBall.castShadow=false;initWeather();clock=new THREE.Clock();addEventListener('resize',resize);animate()}
+
+function addWorldRegions(){
+  // Green Valley'nin ana yerleşimlerini aynı keşfedilebilir haritaya yerleştir.
+  const cityMat=mat(0x858d91,.88), cityGlass=mat(0x6f9da4,.35,.15), concrete=mat(0x777b78,1);
+  // Şehir merkezi: farklı yükseklikte apartman ve ofis blokları.
+  for(const b of [{x:61,z:-10,w:8,d:7,h:17},{x:74,z:-12,w:10,d:8,h:23},{x:87,z:-8,w:8,d:7,h:14},{x:62,z:5,w:7,d:8,h:12},{x:77,z:4,w:9,d:8,h:19},{x:90,z:7,w:7,d:8,h:11}]){
+    box(scene,b.x,b.h/2,b.z,b.w,b.h,b.d,cityMat);
+    for(let y=2;y<b.h-1;y+=2.5)for(let x=-b.w/2+1;x<b.w/2-.5;x+=2){
+      box(scene,b.x+x,y,b.z+b.d/2+.055,.85,.95,.08,cityGlass);
+    }
+    colliders.push({x:b.x,z:b.z,r:Math.max(b.w,b.d)*.62});
+  }
+  // Şehir meydanı ve sokaklar.
+  const cityRoad=mesh(new THREE.PlaneGeometry(48,5),new THREE.MeshStandardMaterial({color:0x555b59,roughness:1}));cityRoad.rotation.x=-Math.PI/2;cityRoad.position.set(75,.015,-2);cityRoad.castShadow=false;
+  const cityCross=mesh(new THREE.PlaneGeometry(5,35),new THREE.MeshStandardMaterial({color:0x555b59,roughness:1}));cityCross.rotation.x=-Math.PI/2;cityCross.position.set(75,.018,-2);cityCross.castShadow=false;
+  // Çiftlik: tarla sıraları, ahır ve silo.
+  const soil=mat(0x765735,1), crop=mat(0x8b9d45,1), barn=mat(0x9b4f3d,1), silo=mat(0xb8b9b2,.8);
+  for(let row=0;row<8;row++){
+    const z=-56+row*3.2;const furrow=mesh(new THREE.BoxGeometry(25,.08,.24),soil);furrow.position.set(-61,.02,z);scene.add(furrow);
+    for(let x=-72;x<-49;x+=2.2){const plant=mesh(new THREE.ConeGeometry(.28,.8,5),crop);plant.position.set(x,.43,z);scene.add(plant)}
+  }
+  box(scene,-78,1.6,-45,10,3.2,8,barn);const barnRoof=mesh(new THREE.ConeGeometry(7,3,4),M.roof);barnRoof.position.set(-78,4.3,-45);barnRoof.rotation.y=Math.PI/4;scene.add(barnRoof);colliders.push({x:-78,z:-45,r:6});
+  cyl(scene,-68,3,-44,2.2,2.2,6,silo,12);colliders.push({x:-68,z:-44,r:2.5});
+  // Sanayi bölgesi: fabrika, bacalar ve depo.
+  box(scene,67,3.2,48,22,6.4,15,concrete);box(scene,67,6.55,48,23,.3,16,mat(0x4b5351,1));
+  for(const x of [60,68,76]){cyl(scene,x,9,41,1.25,1.25,6,mat(0x686e6d,1),10);cyl(scene,x,12,41,.9,.9,1.2,mat(0x393f3e,1),10);colliders.push({x,z:41,r:1.5})}
+  box(scene,86,2.5,52,12,5,12,mat(0x9b9c8b,1));colliders.push({x:67,z:48,r:13},{x:86,z:52,r:8});
+  // Dağ silsilesi kuzeybatıda.
+  for(const m of [{x:-76,z:48,r:17,h:25},{x:-55,z:57,r:20,h:31},{x:-87,z:70,r:15,h:22},{x:-38,z:70,r:17,h:24}]){
+    const mountain=mesh(new THREE.ConeGeometry(m.r,m.h,7),mat(0x59695b,1),scene);mountain.position.set(m.x,m.h/2-.1,m.z);mountain.rotation.y=.3;
+    const cap=mesh(new THREE.ConeGeometry(m.r*.43,m.h*.42,7),mat(0xc5d0c8,1),scene);cap.position.set(m.x,m.h*.77,m.z);cap.rotation.y=.3;
+  }
+  // Kıyı ve sığ su alanı güneybatıda.
+  const shore=mesh(new THREE.PlaneGeometry(70,42),mat(0xc1b58a,1));shore.rotation.x=-Math.PI/2;shore.position.set(-69,-.015,12);scene.add(shore);
+  const sea=mesh(new THREE.PlaneGeometry(72,40),M.water);sea.rotation.x=-Math.PI/2;sea.position.set(-70,-.035,52);sea.material.transparent=true;sea.material.opacity=.94;scene.add(sea);
+  // Bölge giriş tabelaları: keşfedilen yerlerin isimleri dünyada görünür.
+  function regionSign(x,z,title){
+    const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);
+    cyl(g,0,1.05,0,.12,.12,2.1,M.trunk,6);
+    box(g,0,2,0,5.2,1.15,.18,mat(0x263c2a,1));
+    const cv=document.createElement('canvas');cv.width=512;cv.height=128;const ctx=cv.getContext('2d');ctx.fillStyle='#263c2a';ctx.fillRect(0,0,512,128);ctx.strokeStyle='#b7f36b';ctx.lineWidth=6;ctx.strokeRect(5,5,502,118);ctx.fillStyle='#f4ffe9';ctx.font='bold 42px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(title,256,64);
+    const tex=new THREE.CanvasTexture(cv);const label=mesh(new THREE.PlaneGeometry(4.9,1.05),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide}),g);label.position.set(0,2,0.105);
+  }
+  regionSign(49,-20,'ŞEHİR MERKEZİ');regionSign(-55,-36,'ÇİFTLİK');regionSign(54,31,'SANAYİ');regionSign(-38,43,'DAĞ YOLU');regionSign(-48,20,'KIYI YOLU');
+}
 function initWeather(){const count=420,positions=new Float32Array(count*3);rainVelocities=[];for(let i=0;i<count;i++){positions[i*3]=(Math.random()-.5)*90;positions[i*3+1]=Math.random()*28;positions[i*3+2]=(Math.random()-.5)*90;rainVelocities.push(9+Math.random()*9)}const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(positions,3));rainPoints=new THREE.Points(geo,new THREE.PointsMaterial({color:0xc9e6ff,size:.09,transparent:true,opacity:.72,depthWrite:false}));rainPoints.visible=false;scene.add(rainPoints);applyWeather()}function applyWeather(){const names=[['☀️ Açık',0x9fc9df,0x9fc9df],['☁️ Bulutlu',0x87999e,0x87999e],['🌧️ Yağmurlu',0x536775,0x536775],['❄️ Kar yağışı',0xb9c8d3,0xb9c8d3]];const w=names[weatherIndex]||names[0];if($('weather'))$('weather').textContent=w[0];if(rainPoints)rainPoints.visible=weatherIndex===2||weatherIndex===3;if(scene&&scene.fog){scene.fog.near=weatherIndex===2?25:65;scene.fog.far=weatherIndex===2?125:230}if(sunLight){sunLight.intensity=weatherIndex===2?.75:(weatherIndex===1?1.35:(weatherIndex===3?1.1:2.5));if(weatherIndex===2)sunLight.color.setHex(0x9eb7cc)}if(hemiLight)hemiLight.intensity=weatherIndex===2?.8:(weatherIndex===1?1.25:2.1)}function updateWeather(dt){if(!rainPoints)return;const pos=rainPoints.geometry.attributes.position;if(rainPoints.visible){for(let i=0;i<pos.count;i++){let y=pos.getY(i)-rainVelocities[i]*dt;if(y<0){y=18+Math.random()*10;pos.setX(i,(Math.random()-.5)*90);pos.setZ(i,(Math.random()-.5)*90)}pos.setY(i,y)}pos.needsUpdate=true}weatherTimer+=dt;if(weatherTimer>=55){weatherTimer=0;weatherIndex=(weatherIndex+1)%4;if(seasonIndex===3&&weatherIndex===2)weatherIndex=3;applyWeather();toast('Hava değişti: '+$('weather').textContent);save()}}function tree(x,z,s){const g=new THREE.Group();g.position.set(x,0,z);g.scale.setScalar(s);scene.add(g);colliders.push({x,z,r:1.05*s});cyl(g,0,1.35,0,.24,.34,2.7,M.trunk,7);const c=mesh(new THREE.ConeGeometry(1.5,3.1,7),Math.random()>.5?M.leaves:M.leaves2,g);c.position.y=3.1;const c2=mesh(new THREE.ConeGeometry(1.12,2.3,7),M.leaves,g);c2.position.y=4.1}
 function cabin(x,z){const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);colliders.push({x,z,r:4.1});homes.push({x,z,doorX:x,doorZ:z+3.4,price:homes.length===0?500:900,owned:false,level:0,group:g,name:homes.length===0?'Orman Kulübesi':'Köy Evi'});box(g,0,1.5,0,6,3,5,M.wood);const r=mesh(new THREE.ConeGeometry(4.5,2.2,4),M.roof,g);r.position.y=3.9;r.rotation.y=Math.PI/4;box(g,0,1.2,2.53,1.1,2.4,.12,mat(0x392b20));box(g,-1.9,1.8,2.58,1,.8,.12,M.glass);box(g,1.9,1.8,2.58,1,.8,.12,M.glass);box(g,0,.22,3.4,3.3,.25,1.7,M.wood)}
 function shed(x,z){const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);colliders.push({x,z,r:3.1});box(g,0,1.3,0,4.5,2.6,4,M.wood);box(g,0,2.8,0,5,.25,4.5,M.roof);box(g,0,.95,2.04,1.6,1.9,.12,mat(0x342d23))}
